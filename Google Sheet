@@ -1,0 +1,64 @@
+const scriptURL = 'https://script.google.com/macros/s/AKfycbwkNR3-5WVCVj403wwY2F105D1bKhaFf-uVyP8F100Mx4AzX23xNL4cfhlK-7uy-9aC/exec'
+
+// const form = document.forms['contact-form']
+
+// form.addEventListener('submit', e => {
+//   e.preventDefault()
+//   fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+//   .then(response => alert("訂單確認後，我們將在兩日內寄送訂單資訊給您，再麻煩至Email or IG帳號查收訂單確認資訊及匯款資料。" ))
+//   .then(() => { window.location.reload(); })
+//   .catch(error => console.error('Error!', error.message))
+// })
+
+const form = document.forms['contact-form'];
+const modal = document.getElementById("myModal");
+const span = document.getElementsByClassName("close")[0];
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+
+  // 获取输入框的值
+  var smallBottleQuantity = document.getElementById('other-number').value ? document.getElementById('other-number').value : "0";
+  var bigBottleQuantity = document.getElementById('other-number-big').value ? document.getElementById('other-number-big').value : "0";
+
+  // 创建一个新的 FormData 对象
+  var formData = new FormData(form);
+  
+  // 添加额外的数据
+  formData.append('other-number-small', smallBottleQuantity);
+  formData.append('other-number-big', bigBottleQuantity);
+  
+  // 发起 fetch 请求，将表单的所有数据发送到 Google Sheets
+  fetch(scriptURL, { method: 'POST', body: formData })
+    .then(response => console.log("Success!", response))
+    .catch(error => console.error('Error!', error.message))
+    .finally(() => {
+      // 显示模态框
+      modal.style.display = "block";
+    });
+});
+span.onclick = function() {
+  modal.style.display = "none";
+  window.location.reload();
+}
+
+// 点击模态框以外的区域关闭模态框并刷新页面
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+        window.location.reload(); // 刷新页面
+    }
+};
+
+// 显示/隐藏小瓶香水“其他”选项的输入
+document.getElementById('option-other').addEventListener('change', function(e) {
+  var otherInputSmall = document.getElementById('other-number');
+  otherInputSmall.style.display = e.target.checked ? 'inline-block' : 'none';
+});
+
+// 显示/隐藏大瓶香水“其他”选项的输入
+document.getElementById('option-other-big').addEventListener('change', function(e) {
+  var otherInputBig = document.getElementById('other-number-big');
+  otherInputBig.style.display = e.target.checked ? 'inline-block' : 'none';
+});
+
